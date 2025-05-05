@@ -1,89 +1,54 @@
-//TEAM_AXIS
-
-+flag (F): team(200)
+// TEAM_AXIS (DEFENSA)
++flag(F): team(200)
   <-
-  .create_control_points(F,25,3,C);
-  +control_points(C);
-  .length(C,L);
-  +total_control_points(L);
+  .register_service("axis");
+  .register_service("backup");
+  .register_service("defensor");  // Servicio personalizado
   
-  // Dividir agentes en dos grupos (5 y 5)
+  // Estrategia: 30% vigías, 70% patrullas
   ?my_id(ID);
-  .mod(ID, 2, Remainder);
-  if (Remainder == 0) {
-    // Grupo 1: Ir a la bandera y pararse
-    .goto(F);
-    +axis_group1;
+  if (ID < 3) {
+    // Grupo 1: Vigías estáticos en posiciones clave
+    +vigia;
+    .goto([F[0], F[1], F[2] + 20]);  // 20 unidades arriba de la bandera
+    .print("Soy vigía en posición defensiva");
   } else {
-    // Grupo 2: Patrullar alrededor de la bandera
+    // Grupo 2: Patrullas dinámicas
+    .create_control_points(F, 30, 5, C);  // 5 puntos a 30 unidades de la bandera
+    +control_points(C);
     +patrolling;
     +patroll_point(0);
-    +axis_group2;
-  }
-  .print("Axis agents divided into two groups").
+    .print("Iniciando patrulla defensiva");
+  }.
 
-+target_reached(T): axis_group1
+// TEAM_ALLIED (ATAQUE)
++flag(F): team(100)
   <-
-  .print("Axis group1 reached flag position");
-  // Se quedan parados en la bandera
-  -axis_group1.
-
-+target_reached(T): patrolling & axis_group2
-  <-
-  ?patroll_point(P);
-  -+patroll_point(P+1);
-  -target_reached(T).
-
-+patroll_point(P): total_control_points(T) & P<T & axis_group2
-  <-
-  ?control_points(C);
-  .nth(P,C,A);
-  .goto(A).
-
-+patroll_point(P): total_control_points(T) & P==T & axis_group2
-  <-
-  -patroll_point(P);
-  +patroll_point(0).
-
-
-//TEAM_ALLIED
-
-+flag (F): team(100)
-  <-
-  // Dividir agentes en dos grupos (5 y 5)
+  .register_service("allied");
+  .register_service("backup");
+  .register_service("asalto");  // Servicio personalizado
+  
+  // Estrategia: 40% exploradores, 60% atacantes
   ?my_id(ID);
-  .mod(ID, 2, Remainder);
-  if (Remainder == 0) {
-    // Grupo 1: Ir a posición fija y pararse
-    .goto([50, 0, 50]);  // Posición de ejemplo
-    +allied_group1;
+  if (ID < 4) {
+    // Grupo 1: Exploradores (mapean esquinas)
+    +explorador;
+    .goto([15, 0, 15]);  // Esquina inferior izquierda
   } else {
-    // Grupo 2: Ir a por la bandera
-    .goto(F);
-    +allied_group2;
-  }
-  .print("Allied agents divided into two groups").
+    // Grupo 2: Ataque directo
+    .add_internal_action("ruta_segura", "myactions.calcular_ruta_segura");
+    .ruta_segura(F);  // Usa acción interna para ruta segura
+    +atacante;
+  }.
 
-+target_reached(T): allied_group1
+// Comportamiento común
++enemies_in_fov(ID, _, _, Dist, _, Pos): 
+  Dist < 20 & not friends_in_fov(ID, _, _, _, _, _)  // Evita fuego amigo
   <-
-  .print("Allied group1 reached fixed position");
-  // Se quedan parados en la posición
-  -allied_group1.
+  .shoot(3, Pos).  // Soldados disparan 3 veces (daño doble)
 
-+flag_taken: allied_group2
++friends_in_fov(_, _, _, Dist, Health, Pos): 
+  Health < 40 & Dist < 15
   <-
-  .print("In ASL, TEAM_ALLIED flag_taken");
-  ?base(B);
-  +returning;
-  .goto(B);
-  -exploring.
-
-+target_reached(T): returning & allied_group2
-  <-
-  .print("Allied group2 returned to base");
-  -returning;
-  +exploring.
-
-+enemies_in_fov(ID,Type,Angle,Distance,Health,Position)
-  <-
-  .shoot(3,Position).
+  .get_medics;
+  .send(myMedics, achieve, ayuda_medica(Pos)).  // Pide ayuda médica

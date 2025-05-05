@@ -9,19 +9,21 @@
             "rank": "BDISoldier",
             "name": "vlc_axis",
             "password": "secret",
-            "amount": 8,
+            "amount": 6,
             "asl": "myASL/bdisoldier.asl"
         },
         {
             "rank": "BDIMedic",
             "name": "vlc_medic_axis",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdimedic.asl"
         },
          {
             "rank": "BDIFieldOp",
             "name": "vlc_fieldop_axis",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdifieldop.asl"
         }
     ],
@@ -30,19 +32,21 @@
             "rank": "BDISoldier",
             "name": "vlc_allied",
             "password": "secret",
-            "amount": 8,
+            "amount": 6,
             "asl": "myASL/bdisoldier.asl"
         },
         {
             "rank": "BDIMedic",
             "name": "vlc_medic_allied",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdimedic.asl"
         },
          {
             "rank": "BDIFieldOp",
             "name": "vlc_fieldop_allied",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdifieldop.asl"
         }
    ]

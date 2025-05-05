@@ -1,66 +1,36 @@
-//TEAM_AXIS
-
-+flag (F): team(200) 
+// Inicialización
++flag(_): team(T)
   <-
-  .create_control_points(F,25,3,C);
-  +control_points(C);
-  .length(C,L);
-  +total_control_points(L);
-  +patrolling;
-  +patroll_point(0);
-  .print("Got control points").
+  .register_service("medic");
+  .register_service("urgencias");  // Servicio personalizado
+  if (T == 100) {
+    +equipo_aliado;
+  } else {
+    +equipo_eje;
+  }.
 
-
-+target_reached(T): patrolling & team(200) 
+// Contract-Net para urgencias
++ayuda_medica(Pos)[source(A)]: 
+  not ocupado & (equipo_aliado | equipo_eje)
   <-
-  .print("MEDPACK!");
+  ?position(MiPos);
+  .distance(MiPos, Pos, Dist);
+  if (Dist < 25) {  // Solo responde si está cerca
+    .send(A, tell, propuesta_ayuda(MiPos));
+    +ocupado(A, Pos);
+    .print(f"Enviando propuesta de ayuda a {A}");
+  }.
+
+// Movimiento y curación
++acceptproposal[source(A)]: ocupado(A, Pos)
+  <-
+  .goto(Pos);
+  .print(f"Yendo a curar a {A} en {Pos}").
+
++target_reached(T): ocupado(_, T)
+  <-
   .cure;
-  ?patroll_point(P);
-  -+patroll_point(P+1);
-  -target_reached(T).
-
-+patroll_point(P): total_control_points(T) & P<T 
-  <-
-  ?control_points(C);
-  .nth(P,C,A);
-  .goto(A).
-
-+patroll_point(P): total_control_points(T) & P==T
-  <-
-  -patroll_point(P);
-  +patroll_point(0).
-
-
-//TEAM_ALLIED 
-
-+flag (F): team(100) 
-  <-
-  .goto(F).
-
-+flag_taken: team(100) 
-  <-
-  .print("In ASL, TEAM_ALLIED flag_taken");
+  -ocupado(_, T);
+  .print("¡Paquete médico creado!");
   ?base(B);
-  +returning;
-  .goto(B);
-  -exploring.
-
-+heading(H): exploring
-  <-
-  .cure;
-  .wait(2000);
-  .turn(0.375).
-
-//+heading(H): returning
-//  <-
-//  .print("returning").
-
-+target_reached(T): team(100)
-  <- 
-  .print("target_reached");
-  +exploring;
-  .turn(0.375).
-
-+enemies_in_fov(ID,Type,Angle,Distance,Health,Position)
-  <- 
-  .shoot(3,Position).
+  .goto(B).  // Vuelve a base tras curar
