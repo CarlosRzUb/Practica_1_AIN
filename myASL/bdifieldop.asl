@@ -28,4 +28,4 @@
   .reload;
   ?patroll_point(P);
   -+patroll_point(P+1);
-  .print("Recargando en punto de patrulla");
+  .print("Recargando en punto de patrulla").

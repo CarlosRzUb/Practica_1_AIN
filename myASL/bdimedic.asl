@@ -18,17 +18,23 @@
   if (Dist < 25) {  // Solo responde si está cerca
     .send(A, tell, propuesta_ayuda(MiPos));
     +ocupado(A, Pos);
-    .print(f"Enviando propuesta de ayuda a {A}");
+    .print("Enviando propuesta de ayuda a:");
+    .print(A);  // Imprime la variable A en una línea separada
   }.
 
 // Movimiento y curación
-+acceptproposal[source(A)]: ocupado(A, Pos)
++acceptproposal[source(A)]
   <-
+  ocupado(A, Pos);
   .goto(Pos);
-  .print(f"Yendo a curar a {A} en {Pos}").
+  .print("Yendo a curar a:");
+  .print(A);  // Imprime la variable A
+  .print("En la posición:");
+  .print(Pos).  // Imprime la posición en una línea separada
 
-+target_reached(T): ocupado(_, T)
++target_reached(T)
   <-
+  ?ocupado(_, T); 
   .cure;
   -ocupado(_, T);
   .print("¡Paquete médico creado!");
