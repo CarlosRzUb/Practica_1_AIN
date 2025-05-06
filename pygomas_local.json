@@ -1,49 +1,75 @@
 {
-    "host": "localhost",
+    "host": "eisp2emp.inf.upv.es",
     "manager": "m",
     "manager_password": "secret",
     "service": "s",
     "service_password": "secret",
     "axis": [
-		{
-            "rank": "BDISoldier",
-            "name": "vlc_axis",
+        {
+            "rank": "myactions.TacticalFlanker",
+            "name": "cruiube_agimber_vlc_flanker_axis",
             "password": "secret",
-            "amount": 8,
+            "amount": 2,
+            "asl": "myASL/bdisoldier.asl",
+            "params": {
+                "flank_distance": 20,
+                "role": "defender"
+            }
+        },
+        {
+            "rank": "BDISoldier",
+            "name": "cruiube_agimber_vlc_axis",
+            "password": "secret",
+            "amount": 4,
             "asl": "myASL/bdisoldier.asl"
         },
         {
             "rank": "BDIMedic",
-            "name": "vlc_medic_axis",
+            "name": "cruiube_agimber_vlc_medic_axis",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdimedic.asl"
         },
-         {
+        {
             "rank": "BDIFieldOp",
-            "name": "vlc_fieldop_axis",
+            "name": "cruiube_agimber_vlc_fieldop_axis",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdifieldop.asl"
         }
     ],
-     "allied": [
-		{
-            "rank": "BDISoldier",
-            "name": "vlc_allied",
+    "allied": [
+        {
+            "rank": "myactions.TacticalFlanker",
+            "name": "cruiube_agimber_vlc_flanker_allied",
             "password": "secret",
-            "amount": 8,
+            "amount": 2,
+            "asl": "myASL/bdisoldier.asl",
+            "params": {
+                "flank_distance": 15,
+                "role": "attacker"
+            }
+        },
+        {
+            "rank": "BDISoldier",
+            "name": "cruiube_agimber_vlc_allied",
+            "password": "secret",
+            "amount": 4,
             "asl": "myASL/bdisoldier.asl"
         },
         {
             "rank": "BDIMedic",
-            "name": "vlc_medic_allied",
+            "name": "cruiube_agimber_vlc_medic_allied",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdimedic.asl"
         },
-         {
+        {
             "rank": "BDIFieldOp",
-            "name": "vlc_fieldop_allied",
+            "name": "cruiube_agimber_vlc_fieldop_allied",
             "password": "secret",
+            "amount": 2,
             "asl": "myASL/bdifieldop.asl"
         }
-   ]
-  }
+    ]
+}

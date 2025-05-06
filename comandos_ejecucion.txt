@@ -1,0 +1,8 @@
+Ejecución manager:
+pygomas manager -j m@eisp2emp.inf.upv.es -sj s@eisp2emp.inf.upv.es -m map_01 -np 20 -p secret -sp secret
+
+Despliegue de soldados:
+pygomas run -g pygomas_local.json
+
+Vista de batalla:
+pygomas render
