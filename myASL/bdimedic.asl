@@ -1,42 +1,66 @@
-// Inicialización
-+flag(_): team(T)
-  <-
-  .register_service("medic");
-  .register_service("urgencias");  // Servicio personalizado
-  if (T == 100) {
-    +equipo_aliado;
-  } else {
-    +equipo_eje;
-  }.
+//TEAM_AXIS
 
-// Contract-Net para urgencias
-+ayuda_medica(Pos)[source(A)]: 
-  not ocupado & (equipo_aliado | equipo_eje)
++flag (F): team(200) 
   <-
-  ?position(MiPos);
-  .distance(MiPos, Pos, Dist);
-  if (Dist < 25) {  // Solo responde si está cerca
-    .send(A, tell, propuesta_ayuda(MiPos));
-    +ocupado(A, Pos);
-    .print("Enviando propuesta de ayuda a:");
-    .print(A);  // Imprime la variable A en una línea separada
-  }.
+  .create_control_points(F,25,3,C);
+  +control_points(C);
+  .length(C,L);
+  +total_control_points(L);
+  +patrolling;
+  +patroll_point(0);
+  .print("Got control points").
 
-// Movimiento y curación
-+acceptproposal[source(A)]
-  <-
-  ocupado(A, Pos);
-  .goto(Pos);
-  .print("Yendo a curar a:");
-  .print(A);  // Imprime la variable A
-  .print("En la posición:");
-  .print(Pos).  // Imprime la posición en una línea separada
 
-+target_reached(T)
++target_reached(T): patrolling & team(200) 
   <-
-  ?ocupado(_, T); 
+  .print("MEDPACK!");
   .cure;
-  -ocupado(_, T);
-  .print("¡Paquete médico creado!");
+  ?patroll_point(P);
+  -+patroll_point(P+1);
+  -target_reached(T).
+
++patroll_point(P): total_control_points(T) & P<T 
+  <-
+  ?control_points(C);
+  .nth(P,C,A);
+  .goto(A).
+
++patroll_point(P): total_control_points(T) & P==T
+  <-
+  -patroll_point(P);
+  +patroll_point(0).
+
+
+//TEAM_ALLIED 
+
++flag (F): team(100) 
+  <-
+  .goto(F).
+
++flag_taken: team(100) 
+  <-
+  .print("In ASL, TEAM_ALLIED flag_taken");
   ?base(B);
-  .goto(B).  // Vuelve a base tras curar
+  +returning;
+  .goto(B);
+  -exploring.
+
++heading(H): exploring
+  <-
+  .cure;
+  .wait(2000);
+  .turn(0.375).
+
+//+heading(H): returning
+//  <-
+//  .print("returning").
+
++target_reached(T): team(100)
+  <- 
+  .print("target_reached");
+  +exploring;
+  .turn(0.375).
+
++enemies_in_fov(ID,Type,Angle,Distance,Health,Position)
+  <- 
+  .shoot(3,Position).

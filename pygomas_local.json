@@ -6,21 +6,10 @@
     "service_password": "secret",
     "axis": [
         {
-            "rank": "myactions.TacticalFlanker",
-            "name": "cruiube_agimber_vlc_flanker_axis",
-            "password": "secret",
-            "amount": 2,
-            "asl": "myASL/bdisoldier.asl",
-            "params": {
-                "flank_distance": 20,
-                "role": "defender"
-            }
-        },
-        {
             "rank": "BDISoldier",
             "name": "cruiube_agimber_vlc_axis",
             "password": "secret",
-            "amount": 4,
+            "amount": 6,
             "asl": "myASL/bdisoldier.asl"
         },
         {
@@ -40,21 +29,10 @@
     ],
     "allied": [
         {
-            "rank": "myactions.TacticalFlanker",
-            "name": "cruiube_agimber_vlc_flanker_allied",
-            "password": "secret",
-            "amount": 2,
-            "asl": "myASL/bdisoldier.asl",
-            "params": {
-                "flank_distance": 15,
-                "role": "attacker"
-            }
-        },
-        {
             "rank": "BDISoldier",
             "name": "cruiube_agimber_vlc_allied",
             "password": "secret",
-            "amount": 4,
+            "amount": 6,
             "asl": "myASL/bdisoldier.asl"
         },
         {
