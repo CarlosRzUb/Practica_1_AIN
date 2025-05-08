@@ -1,3 +1,12 @@
+
+//Cuando recibe una petición de curación
++heal_me(P)[source[A]]
+  <-
+  .print("¡Petición de cura de ", A, "!");
+  .goto(P);
+  .cure.
+
+
 //TEAM_AXIS
 
 +flag (F): team(200) 
@@ -8,7 +17,9 @@
   +total_control_points(L);
   +patrolling;
   +patroll_point(0);
-  .print("Got control points").
+  .print("Got control points");
+  .register_service("heal_request");
+  .print("Médico registrado como proveedor de cura").
 
 
 +target_reached(T): patrolling & team(200) 
@@ -61,6 +72,13 @@
   +exploring;
   .turn(0.375).
 
-+enemies_in_fov(ID,Type,Angle,Distance,Health,Position)
-  <- 
-  .shoot(3,Position).
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
+  <-
+  //Si tienen a un aliado entre un enemigo y ellos mismos, rodean al enemigo.
+  if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
+    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+    .goto(CirclePoint)
+  }
+  else{
+    .shoot(3, [Xe, Ye, Ze])
+  }.

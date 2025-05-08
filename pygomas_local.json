@@ -6,7 +6,7 @@
     "service_password": "secret",
     "axis": [
         {
-            "rank": "BDISoldier",
+            "rank": "soldier.BDISuperSoldier",
             "name": "cruiube_agimber_vlc_axis",
             "password": "secret",
             "amount": 6,
@@ -29,7 +29,7 @@
     ],
     "allied": [
         {
-            "rank": "BDISoldier",
+            "rank": "soldier.BDISuperSoldier",
             "name": "cruiube_agimber_vlc_allied",
             "password": "secret",
             "amount": 6,

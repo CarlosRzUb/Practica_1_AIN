@@ -61,6 +61,13 @@
   +exploring;
   .turn(0.375).
 
-+enemies_in_fov(ID,Type,Angle,Distance,Health,Position)
-  <- 
-  .shoot(3,Position).
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
+  <-
+  //Si tienen a un aliado entre un enemigo y ellos mismos, rodean al enemigo.
+  if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
+    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+    .goto(CirclePoint)
+  }
+  else{
+    .shoot(3, [Xe, Ye, Ze])
+  }.
