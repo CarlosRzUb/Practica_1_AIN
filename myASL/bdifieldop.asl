@@ -1,5 +1,4 @@
-//TEAM_AXIS
-
+//SERVICIOS NUEVOS: Registro de servicios especializados
 +flag (F): team(200) 
   <-
   .create_control_points(F,25,3,C);
@@ -8,8 +7,31 @@
   +total_control_points(L);
   +patrolling;
   +patroll_point(0);
-  .print("Got control points").
+  .print("Got control points");
+  .register_service("ammo_specialist");    // SERVICIO NUEVO
+  .register_service("tactical_support");  // SERVICIO NUEVO
+  .print("Servicios de apoyo táctico registrados").
 
++flag (F): team(100) 
+  <-
+  .register_service("ammo_specialist");    // SERVICIO NUEVO
+  .register_service("tactical_support");  // SERVICIO NUEVO
+  .goto(F).
+
+//SERVICIO: Suministro de munición crítica (NUEVO)
++critical_ammo_request(P, AmmoLevel)[source(A)]
+  <-
+  .print("¡Petición crítica de munición de ", A, " con munición ", AmmoLevel, "!");
+  if(AmmoLevel < 10){
+    ?position(MyPos);
+    .send(A, tell, priority_ammo_coming(MyPos));
+    .goto(P);
+    +priority_resupply(A)
+  }
+  else{
+    .goto(P);
+    .reload
+  }.
 
 +target_reached(T): patrolling & team(200) 
   <-
@@ -30,13 +52,6 @@
   -patroll_point(P);
   +patroll_point(0).
 
-
-//TEAM_ALLIED 
-
-+flag (F): team(100) 
-  <-
-  .goto(F).
-
 +flag_taken: team(100) 
   <-
   .print("In ASL, TEAM_ALLIED flag_taken");
@@ -51,23 +66,29 @@
   .wait(2000);
   .turn(0.375).
 
-//+heading(H): returning
-//  <-
-//  .print("returning").
-
 +target_reached(T): team(100)
   <- 
   .print("target_reached");
   +exploring;
   .turn(0.375).
 
+//COMPORTAMIENTO MEJORADO: Evitar fuego amigo
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
   <-
-  //Si tienen a un aliado entre un enemigo y ellos mismos, rodean al enemigo.
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
-    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+    .print("Aliado en línea de fuego, rodeando enemigo");
+    .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
     .goto(CirclePoint)
   }
   else{
+    .print("Disparando al enemigo");
     .shoot(3, [Xe, Ye, Ze])
   }.
+
+//COORDINACIÓN: Responder a órdenes del líder
++tactical_support(LeaderPos)[source(Leader)]
+  <-
+  .print("Recibida orden de apoyo táctico del líder");
+  +supporting_leader;
+  .goto(LeaderPos);
+  .reload.
