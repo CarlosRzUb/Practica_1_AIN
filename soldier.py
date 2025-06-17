@@ -5,12 +5,12 @@ from loguru import logger
 from spade.behaviour import OneShotBehaviour
 from spade.template import Template
 from spade.message import Message
-from pygomas.bditroop import BDITroop
-from pygomas.bdisoldier import BDISoldier
+from pygomas.pygomas.bditroop import BDITroop
+from pygomas.pygomas.bdisoldier import BDISoldier
 from agentspeak import Actions
 from agentspeak import grounded
 from agentspeak.stdlib import actions as asp_action
-import pygomas.ontology as ontology
+import pygomas.pygomas.ontology as ontology
 
 class BDISuperSoldier(BDISoldier):
     def __init__(self, *args, **kwargs):

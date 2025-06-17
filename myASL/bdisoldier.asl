@@ -4,7 +4,7 @@
 +myFieldops([]).
 
 //TEAM_ALLIED - Establecer líder y coordinación
-+flag (F): team(100)
++flag(F): team(100)
   <-
   .get_service("team_leader");
   .wait(1000);
@@ -117,14 +117,16 @@
     .goto(FlankPos);
     +flanking_enemy([Xe, Ye, Ze])
   }
-  elif(abs(AngA - AngE) < 0.3 & DistanceA < DistanceE){
-    .print("Riesgo de fuego amigo, rodeando enemigo");
-    .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
-    .goto(CirclePoint)
-  }
-  else{
-    .print("Disparando al enemigo en posición segura");
-    .shoot(3, [Xe, Ye, Ze])
+  else {
+    if(abs(AngA - AngE) < 0.3 & DistanceA < DistanceE){
+      .print("Riesgo de fuego amigo, rodeando enemigo");
+      .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
+      .goto(CirclePoint)
+    }
+    else {
+      .print("Disparando al enemigo en posición segura");
+      .shoot(3, [Xe, Ye, Ze])
+    }
   }.
 
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs])
