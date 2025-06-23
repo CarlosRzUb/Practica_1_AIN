@@ -53,11 +53,20 @@
   if(defense_coordinator(C)){
     .print("Coordinador defensivo encontrado: ", C)
   }
-  else{
-    .register_service("defense_coordinator");
-    .register_service("scout");
-    +i_am_coordinator;
-    .print("Soy el coordinador defensivo")
+  else {
+      .register_service("defense_coordinator");
+      .wait(500);
+      .get_service("defense_coordinator");
+      if(defense_coordinator(C2) & C2 == me) {
+          .register_service("scout");
+          +i_am_coordinator;
+          .print("Soy el coordinador defensivo")
+      }
+      else {
+          .print("C2 es: ", C2);
+          .print("me es: ", me);
+          .print("Otro agente se registró como coordinador: ", C2)
+      }
   };
   .create_control_points(F,25,3,C);
   +control_points(C);
@@ -113,14 +122,15 @@
   .safe_distance_check([Xs, Ys, Zs], [Xa, Ya, Za], 10, SafeDistance);
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE & SafeDistance == false){
     .print("Aliado en línea de fuego, usando flanqueo táctico");
-    .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20, FlankPos);
+    FlankPos = .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20);
     .goto(FlankPos);
     +flanking_enemy([Xe, Ye, Ze])
   }
   else {
     if(abs(AngA - AngE) < 0.3 & DistanceA < DistanceE){
       .print("Riesgo de fuego amigo, rodeando enemigo");
-      .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
+      CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+      .print("Mi posición: ", [Xs, Ys, Zs], "Centro: ", [Xe, Ye, Ze], "Siguiente punto: ", CirclePoint);
       .goto(CirclePoint)
     }
     else {

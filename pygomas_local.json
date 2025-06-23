@@ -1,5 +1,5 @@
 {
-    "host": "localhost",
+    "host": "eisp2emp.inf.upv.es",
     "manager": "m",
     "manager_password": "secret",
     "service": "s",
@@ -13,14 +13,14 @@
             "asl": "myASL/bdisoldier.asl"
         },
         {
-            "rank": "BDIMedic",
+            "rank": "soldier.BDISuperMedic",
             "name": "cruiube_agimber_vlc_medic_axis",
             "password": "secret",
             "amount": 2,
             "asl": "myASL/bdimedic.asl"
         },
         {
-            "rank": "BDIFieldOp",
+            "rank": "soldier.BDISuperFieldOP",
             "name": "cruiube_agimber_vlc_fieldop_axis",
             "password": "secret",
             "amount": 2,
@@ -36,14 +36,14 @@
             "asl": "myASL/bdisoldier.asl"
         },
         {
-            "rank": "BDIMedic",
+            "rank": "soldier.BDISuperMedic",
             "name": "cruiube_agimber_vlc_medic_allied",
             "password": "secret",
             "amount": 2,
             "asl": "myASL/bdimedic.asl"
         },
         {
-            "rank": "BDIFieldOp",
+            "rank": "soldier.BDISuperFieldOP",
             "name": "cruiube_agimber_vlc_fieldop_allied",
             "password": "secret",
             "amount": 2,

@@ -86,7 +86,7 @@
   <-
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
     .print("Aliado en línea de fuego, rodeando enemigo");
-    .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
+    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
     .goto(CirclePoint)
   }
   else{
