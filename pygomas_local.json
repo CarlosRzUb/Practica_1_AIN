@@ -30,9 +30,16 @@
     "allied": [
         {
             "rank": "soldier.BDISuperSoldier",
+            "name": "cruiube_agimber_vlc_axis_leader",
+            "password": "secret",
+            "amount": 1,
+            "asl": "myASL/bdileader.asl"
+        },
+        {
+            "rank": "soldier.BDISuperSoldier",
             "name": "cruiube_agimber_vlc_allied",
             "password": "secret",
-            "amount": 6,
+            "amount": 5,
             "asl": "myASL/bdisoldier.asl"
         },
         {

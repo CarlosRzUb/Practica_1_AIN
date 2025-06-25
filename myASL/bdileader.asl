@@ -6,35 +6,28 @@
 //TEAM_ALLIED - Establecer líder y coordinación
 +flag(F): team(100)
   <-
-  .register_service("follow_leader");
-  .register_service("backup_medics");
+  .wait(500);
+  .get_service("follow_leader");
+  .print("Soy el líder del equipo");
   .goto(F).
 
-//Plan para seguir formación del líder
-+follow_leader(LeaderPos)[source(Leader)]
-  <-
-  .print("Recibida orden de formación del líder");
-  .goto(LeaderPos);
-  .wait(3000);
-  ?flag(F);
-  .goto(F).
 
-//TEAM_AXIS - Coordinación defensiva
-+flag (F): team(200)
+//Coordinación del líder
++follow_leader(C): team(100)
   <-
-  .create_control_points(F,25,3,C);
-  +control_points(C);
-  .length(C,L);
-  +total_control_points(L);
-  +patrolling;
-  +patroll_point(0);
-  .print("Got control points").
-
-+target_reached(T): patrolling & team(200)
-  <-
-  ?patroll_point(P);
-  -+patroll_point(P+1);
-  -target_reached(T).
+  .get_backups;
+  .get_medics;
+  .get_fieldops;
+  .wait(20000);
+  ?position(MyPos);
+  .send(C, tell, follow_leader(MyPos));
+  if(myMedics(M) & M \== []){
+    .send(M, tell, support_position(MyPos))
+  };
+  if(myFieldops(F) & F \== []){
+    .send(F, tell, tactical_support(MyPos))
+  };
+  +follow_leader(C).
 
 +patroll_point(P): total_control_points(T) & P<T
   <-
@@ -101,7 +94,7 @@
   .look_at([Xe, Ye, Ze]);
   .shoot(3, [Xe, Ye, Ze]).
 
-+threshold_health(30): not enemies_in_fov(_,_,_,_,_,_)
++threshold_health(30)
   <-
   .get_medics;
   ?position(P);
@@ -109,11 +102,3 @@
     .print("Necesito curación!");
     .send(M_list, tell, heal_me(P))
   }.
-
-//SERVICIO: Responder a peticiones de cobertura si no tiene la bandera
-+cover_request(Area)[source(A)]: not flag_taken
-  <-
-  .print("Misión de cobertura en área ", Area, " solicitada por ", A);
-  .goto(Area);
-  ?flag(F);
-  .goto(F).

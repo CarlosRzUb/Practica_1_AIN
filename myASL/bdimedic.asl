@@ -7,15 +7,10 @@
   +total_control_points(L);
   +patrolling;
   +patroll_point(0);
-  .print("Got control points");
-  .register_service("emergency_support");  // SERVICIO NUEVO
-  .register_service("combat_medic");       // SERVICIO NUEVO
-  .print("Servicios médicos especializados registrados").
+  .print("Got control points").
 
 +flag (F): team(100) 
   <-
-  .register_service("emergency_support");  // SERVICIO NUEVO
-  .register_service("combat_medic");       // SERVICIO NUEVO
   .goto(F).
 
 //SERVICIO: Curación de emergencia (NUEVO)
@@ -81,9 +76,16 @@
   +exploring;
   .turn(0.375).
 
-//COMPORTAMIENTO MEJORADO: Evitar fuego amigo
++backup_medics(C)
+  <-
+  ?position(MyPos);
+  .send(C, tell, cover_request(MyPos));
+  .print("Solicitando cobertura a un soldado").
+
+//Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
   <-
+  .get_service("backup_medics");
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
     .print("Aliado en línea de fuego, rodeando enemigo");
     CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
@@ -91,12 +93,22 @@
   }
   else{
     .print("Disparando al enemigo");
+    .look_at([Xe, Ye, Ze]);
     .shoot(3, [Xe, Ye, Ze])
   }.
 
-//COORDINACIÓN: Responder a órdenes del líder
-+support_position(LeaderPos)[source(Leader)]
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs])
   <-
-  .print("Recibida orden de apoyo médico del líder");
-  +supporting_leader;
-  .goto(LeaderPos).
+  .get_service("backup_medics");
+  .print("Campo libre, disparando al enemigo");
+  .look_at([Xe, Ye, Ze]);
+  .shoot(3, [Xe, Ye, Ze]).
+
+//COORDINACIÓN: Responder a órdenes del líder si no tiene la bandera
++support_position(LeaderPos)[source(Leader)]: not flag_taken
+  <-
+  .print("Recibida orden de apoyo táctico del líder");
+  .goto(LeaderPos);
+  .cure;
+  ?flag(F);
+  .goto(F).

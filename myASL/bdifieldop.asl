@@ -7,15 +7,10 @@
   +total_control_points(L);
   +patrolling;
   +patroll_point(0);
-  .print("Got control points");
-  .register_service("ammo_specialist");    // SERVICIO NUEVO
-  .register_service("tactical_support");  // SERVICIO NUEVO
-  .print("Servicios de apoyo táctico registrados").
+  .print("Got control points").
 
 +flag (F): team(100) 
   <-
-  .register_service("ammo_specialist");    // SERVICIO NUEVO
-  .register_service("tactical_support");  // SERVICIO NUEVO
   .goto(F).
 
 //SERVICIO: Suministro de munición crítica (NUEVO)
@@ -82,13 +77,21 @@
   }
   else{
     .print("Disparando al enemigo");
+    .look_at([Xe, Ye, Ze]);
     .shoot(3, [Xe, Ye, Ze])
   }.
 
-//COORDINACIÓN: Responder a órdenes del líder
-+tactical_support(LeaderPos)[source(Leader)]
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs])
+  <-
+  .print("Campo libre, disparando al enemigo");
+  .look_at([Xe, Ye, Ze]);
+  .shoot(3, [Xe, Ye, Ze]).
+
+//COORDINACIÓN: Responder a órdenes del líder si no tiene la bandera
++tactical_support(LeaderPos)[source(Leader)]: not flag_taken
   <-
   .print("Recibida orden de apoyo táctico del líder");
-  +supporting_leader;
   .goto(LeaderPos);
-  .reload.
+  .reload;
+  ?flag(F);
+  .goto(F).
