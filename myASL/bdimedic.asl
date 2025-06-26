@@ -13,10 +13,10 @@
   <-
   .goto(F).
 
-//SERVICIO: Curación de emergencia (NUEVO)
+//SERVICIO: Curacion de emergencia (NUEVO)
 +emergency_heal_request(P, HealthLevel)[source(A)]
   <-
-  .print("¡Petición de curación de emergencia de ", A, " con salud ", HealthLevel, "!");
+  .print("¡Peticion de curacion de emergencia de ", A, " con salud ", HealthLevel, "!");
   if(HealthLevel < 20){
     ?position(MyPos);
     .send(A, tell, priority_medic_coming(MyPos));
@@ -28,10 +28,10 @@
     .cure
   }.
 
-//Cuando recibe una petición de curación normal
+//Cuando recibe una peticion de curacion normal
 +heal_me(P)[source(A)]
   <-
-  .print("¡Petición de cura de ", A, "!");
+  .print("¡Peticion de cura de ", A, "!");
   ?position(MyPos);
   .send(A, tell, medic_coming(MyPos));
   .goto(P);
@@ -82,12 +82,12 @@
   .send(C, tell, cover_request(MyPos));
   .print("Solicitando cobertura a un soldado").
 
-//Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
+//Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo (equipo aliado)
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(100)
   <-
   .get_service("backup_medics");
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
-    .print("Aliado en línea de fuego, rodeando enemigo");
+    .print("Aliado en linea de fuego, rodeando enemigo");
     CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
     .goto(CirclePoint)
   }
@@ -97,17 +97,38 @@
     .shoot(3, [Xe, Ye, Ze])
   }.
 
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs])
+//Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo (equipo eje)
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(200)
+  <-
+  if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
+    .print("Aliado en linea de fuego, rodeando enemigo");
+    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+    .goto(CirclePoint)
+  }
+  else{
+    .print("Disparando al enemigo");
+    .look_at([Xe, Ye, Ze]);
+    .shoot(3, [Xe, Ye, Ze])
+  }.
+
+
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & team(100)
   <-
   .get_service("backup_medics");
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
   .shoot(3, [Xe, Ye, Ze]).
 
-//COORDINACIÓN: Responder a órdenes del líder si no tiene la bandera
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & team(200)
+  <-
+  .print("Campo libre, disparando al enemigo");
+  .look_at([Xe, Ye, Ze]);
+  .shoot(3, [Xe, Ye, Ze]).
+
+//COORDINACIoN: Responder a ordenes del lider si no tiene la bandera
 +support_position(LeaderPos)[source(Leader)]: not flag_taken
   <-
-  .print("Recibida orden de apoyo táctico del líder");
+  .print("Recibida orden de apoyo tactico del lider");
   .goto(LeaderPos);
   .cure;
   ?flag(F);

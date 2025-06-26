@@ -1,19 +1,19 @@
-// Inicialización de variables
+// Inicializacion de variables
 +myBackups([]).
 +myMedics([]).
 +myFieldops([]).
 
-//TEAM_ALLIED - Establecer líder y coordinación
+//TEAM_ALLIED - Establecer lider y coordinacion
 +flag(F): team(100)
   <-
   .wait(500);
   .get_service("follow_leader");
-  .print("Soy el líder del equipo");
+  .print("Soy el lider del equipo");
   .goto(F).
 
 
-//Coordinación del líder
-+follow_leader(C): team(100)
+//Coordinacion del lider
++follow_leader(C): team(100) & not flag_taken & not enemies_in_fov(_,_,_,_,_,_)
   <-
   .get_backups;
   .get_medics;
@@ -24,9 +24,13 @@
   if(myMedics(M) & M \== []){
     .send(M, tell, support_position(MyPos))
   };
-  if(myFieldops(F) & F \== []){
-    .send(F, tell, tactical_support(MyPos))
+  if(myFieldops(Fo) & Fo \== []){
+    .send(Fo, tell, tactical_support(MyPos))
   };
+  ?flag(F);
+  .goto(MyPos);
+  .wait(2000);
+  .goto(F);
   +follow_leader(C).
 
 +patroll_point(P): total_control_points(T) & P<T
@@ -68,21 +72,21 @@
   <-
   .safe_distance_check([Xs, Ys, Zs], [Xa, Ya, Za], 10, SafeDistance);
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE & SafeDistance == false){
-    .print("Aliado en línea de fuego, usando flanqueo táctico");
-    FlankPos = .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20);
-    .goto(FlankPos)
+  .print("Aliado en linea de fuego, usando flanqueo tactico");
+  .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20, FlankPos);
+  .goto(FlankPos)
   }
   else {
     AngDiff = AngA - AngE;
-    Ang = .abs(AngDiff);
+    .abs(AngDiff, Ang);
     if(Ang < 0.3 & DistanceA < DistanceE){
       .print("Riesgo de fuego amigo, rodeando enemigo");
-      CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
-      .print("Mi posición: ", [Xs, Ys, Zs], "Centro: ", [Xe, Ye, Ze], "Siguiente punto: ", CirclePoint);
+      .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
+      .print("Mi posicion: ", [Xs, Ys, Zs], "Centro: ", [Xe, Ye, Ze], "Siguiente punto: ", CirclePoint);
       .goto(CirclePoint)
     }
     else {
-      .print("Disparando al enemigo en posición segura");
+      .print("Disparando al enemigo en posicion segura");
       .look_at([Xe, Ye, Ze]);
       .shoot(3, [Xe, Ye, Ze])
     }
@@ -99,6 +103,6 @@
   .get_medics;
   ?position(P);
   if(myMedics(M_list) & M_list \== []){
-    .print("Necesito curación!");
+    .print("Necesito curacion!");
     .send(M_list, tell, heal_me(P))
   }.

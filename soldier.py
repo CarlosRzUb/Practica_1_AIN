@@ -21,11 +21,11 @@ class BDISuperSoldier(BDISoldier):
     def add_custom_actions(self, actions):
         super().add_custom_actions(actions)
 
-        @actions.add_function(".abs", (float))
+        @actions.add_function(".abs", (float, ))
         def _abs(x):
             return float(abs(float(x)))
 
-        @actions.add_function(".calculate_flanking_position", (tuple, tuple, float))
+        @actions.add_function(".calculate_flanking_position", (tuple, tuple, float, ))
         def _calculate_flanking_position(agent_pos, enemy_pos, distance):
             """Calcula una posición de flanqueo óptima"""
             dx = enemy_pos[0] - agent_pos[0]
@@ -35,7 +35,7 @@ class BDISuperSoldier(BDISoldier):
             flank_z = enemy_pos[2] + distance * math.sin(angle)
             return (float(flank_x), float(agent_pos[1]), float(flank_z))
 
-        @actions.add_function(".circle", (tuple, tuple, float))
+        @actions.add_function(".circle", (tuple, tuple, float, ))
         def _circle(agent_pos, center, radius):
             dx = agent_pos[0] - center[0]
             dz = agent_pos[2] - center[2]
@@ -58,6 +58,11 @@ class BDISuperSoldier(BDISoldier):
             distance = math.sqrt(float(dx*dx) + float(dz*dz))
             return float(distance) >= float(min_distance)
         
+        @actions.add_function(".is_number", (object, ))
+        def _is_number(value):
+            """Verifica si el valor es un número"""
+            return isinstance(value, (int, float))
+        
 class BDISuperMedic(BDIMedic):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,7 +74,7 @@ class BDISuperMedic(BDIMedic):
         def _abs(x):
             return float(abs(float(x)))
 
-        @actions.add_function(".calculate_flanking_position", (tuple, tuple, float))
+        @actions.add_function(".calculate_flanking_position", (tuple, tuple, float, ))
         def _calculate_flanking_position(agent_pos, enemy_pos, distance):
             """Calcula una posición de flanqueo óptima"""
             dx = enemy_pos[0] - agent_pos[0]
@@ -79,7 +84,7 @@ class BDISuperMedic(BDIMedic):
             flank_z = enemy_pos[2] + distance * math.sin(angle)
             return (float(flank_x), float(agent_pos[1]), float(flank_z))
 
-        @actions.add_function(".circle", (tuple, tuple, float))
+        @actions.add_function(".circle", (tuple, tuple, float, ))
         def _circle(agent_pos, center, radius):
             dx = agent_pos[0] - center[0]
             dz = agent_pos[2] - center[2]
@@ -113,7 +118,7 @@ class BDISuperFieldOP(BDIFieldOp):
         def _abs(x):
             return float(abs(float(x)))
         
-        @actions.add_function(".calculate_flanking_position", (tuple, tuple, float))
+        @actions.add_function(".calculate_flanking_position", (tuple, tuple, float, ))
         def _calculate_flanking_position(agent_pos, enemy_pos, distance):
             """Calcula una posición de flanqueo óptima"""
             dx = enemy_pos[0] - agent_pos[0]
@@ -123,7 +128,7 @@ class BDISuperFieldOP(BDIFieldOp):
             flank_z = enemy_pos[2] + distance * math.sin(angle)
             return (float(flank_x), float(agent_pos[1]), float(flank_z))
 
-        @actions.add_function(".circle", (tuple, tuple, float))
+        @actions.add_function(".circle", (tuple, tuple, float, ))
         def _circle(agent_pos, center, radius):
             dx = agent_pos[0] - center[0]
             dz = agent_pos[2] - center[2]

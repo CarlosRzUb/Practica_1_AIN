@@ -13,10 +13,10 @@
   <-
   .goto(F).
 
-//SERVICIO: Suministro de munición crítica (NUEVO)
+//SERVICIO: Suministro de municion critica (NUEVO)
 +critical_ammo_request(P, AmmoLevel)[source(A)]
   <-
-  .print("¡Petición crítica de munición de ", A, " con munición ", AmmoLevel, "!");
+  .print("¡Peticion critica de municion de ", A, " con municion ", AmmoLevel, "!");
   if(AmmoLevel < 10){
     ?position(MyPos);
     .send(A, tell, priority_ammo_coming(MyPos));
@@ -71,7 +71,7 @@
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
   <-
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
-    .print("Aliado en línea de fuego, rodeando enemigo");
+    .print("Aliado en linea de fuego, rodeando enemigo");
     CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
     .goto(CirclePoint)
   }
@@ -87,10 +87,10 @@
   .look_at([Xe, Ye, Ze]);
   .shoot(3, [Xe, Ye, Ze]).
 
-//COORDINACIÓN: Responder a órdenes del líder si no tiene la bandera
+//COORDINACIoN: Responder a ordenes del lider si no tiene la bandera
 +tactical_support(LeaderPos)[source(Leader)]: not flag_taken
   <-
-  .print("Recibida orden de apoyo táctico del líder");
+  .print("Recibida orden de apoyo tactico del lider");
   .goto(LeaderPos);
   .reload;
   ?flag(F);

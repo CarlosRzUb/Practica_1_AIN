@@ -1,25 +1,25 @@
-// Inicialización de variables
+// Inicializacion de variables
 +myBackups([]).
 +myMedics([]).
 +myFieldops([]).
 
-//TEAM_ALLIED - Establecer líder y coordinación
+//TEAM_ALLIED - Establecer lider y coordinacion
 +flag(F): team(100)
   <-
   .register_service("follow_leader");
   .register_service("backup_medics");
   .goto(F).
 
-//Plan para seguir formación del líder
+//Plan para seguir formacion del lider
 +follow_leader(LeaderPos)[source(Leader)]
   <-
-  .print("Recibida orden de formación del líder");
+  .print("Recibida orden de formacion del lider");
   .goto(LeaderPos);
   .wait(3000);
   ?flag(F);
   .goto(F).
 
-//TEAM_AXIS - Coordinación defensiva
+//TEAM_AXIS - Coordinacion defensiva
 +flag (F): team(200)
   <-
   .create_control_points(F,25,3,C);
@@ -75,21 +75,21 @@
   <-
   .safe_distance_check([Xs, Ys, Zs], [Xa, Ya, Za], 10, SafeDistance);
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE & SafeDistance == false){
-    .print("Aliado en línea de fuego, usando flanqueo táctico");
+    .print("Aliado en linea de fuego, usando flanqueo tactico");
     FlankPos = .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20);
     .goto(FlankPos)
   }
   else {
     AngDiff = AngA - AngE;
-    Ang = .abs(AngDiff);
-    if(Ang < 0.3 & DistanceA < DistanceE){
+    .abs(AngDiff, Ang);
+    if(Ang < 0.300 & DistanceA < DistanceE){
       .print("Riesgo de fuego amigo, rodeando enemigo");
-      CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
-      .print("Mi posición: ", [Xs, Ys, Zs], "Centro: ", [Xe, Ye, Ze], "Siguiente punto: ", CirclePoint);
+      .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
+      .print("Mi posicion: ", [Xs, Ys, Zs], "Centro: ", [Xe, Ye, Ze], "Siguiente punto: ", CirclePoint);
       .goto(CirclePoint)
     }
     else {
-      .print("Disparando al enemigo en posición segura");
+      .print("Disparando al enemigo en posicion segura");
       .look_at([Xe, Ye, Ze]);
       .shoot(3, [Xe, Ye, Ze])
     }
@@ -106,14 +106,14 @@
   .get_medics;
   ?position(P);
   if(myMedics(M_list) & M_list \== []){
-    .print("Necesito curación!");
+    .print("Necesito curacion!");
     .send(M_list, tell, heal_me(P))
   }.
 
 //SERVICIO: Responder a peticiones de cobertura si no tiene la bandera
 +cover_request(Area)[source(A)]: not flag_taken
   <-
-  .print("Misión de cobertura en área ", Area, " solicitada por ", A);
+  .print("Mision de cobertura en area ", Area, " solicitada por ", A);
   .goto(Area);
   ?flag(F);
   .goto(F).
