@@ -17,7 +17,8 @@
   .goto(LeaderPos);
   .wait(3000);
   ?flag(F);
-  .goto(F).
+  .goto(F);
+  -follow_leader.
 
 //TEAM_AXIS - Coordinacion defensiva
 +flag (F): team(200)
@@ -83,13 +84,13 @@
   .safe_distance_check([Xs, Ys, Zs], [Xa, Ya, Za], 10, SafeDistance);
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE & SafeDistance == false){
     .print("Aliado en linea de fuego, usando flanqueo tactico");
-    FlankPos = .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20);
+    .calculate_flanking_position([Xs, Ys, Zs], [Xe, Ye, Ze], 20, FlankPos);
     .goto(FlankPos)
   }
   else {
     AngDiff = AngA - AngE;
     .abs(AngDiff, Ang);
-    if(Ang < 0.300 & DistanceA < DistanceE){
+    if(Ang < 0.30 & DistanceA < DistanceE){
       .print("Riesgo de fuego amigo, rodeando enemigo");
       .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
       .print("Mi posicion: ", [Xs, Ys, Zs], "Centro: ", [Xe, Ye, Ze], "Siguiente punto: ", CirclePoint);
@@ -98,7 +99,7 @@
     else {
       .print("Disparando al enemigo en posicion segura");
       .look_at([Xe, Ye, Ze]);
-      .shoot(3, [Xe, Ye, Ze])
+      .shoot(4, [Xe, Ye, Ze])
     }
   }.
 
@@ -106,7 +107,7 @@
   <-
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
-  .shoot(3, [Xe, Ye, Ze]).
+  .shoot(4, [Xe, Ye, Ze]).
 
 +threshold_health(30): not enemies_in_fov(_,_,_,_,_,_)
   <-
@@ -123,4 +124,5 @@
   .print("Mision de cobertura en area ", Area, " solicitada por ", A);
   .goto(Area);
   ?flag(F);
-  .goto(F).
+  .goto(F);
+  -cover_request.

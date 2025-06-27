@@ -85,14 +85,14 @@
   else{
     .print("Disparando al enemigo");
     .look_at([Xe, Ye, Ze]);
-    .shoot(3, [Xe, Ye, Ze])
+    .shoot(4, [Xe, Ye, Ze])
   }.
 
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & not returning
   <-
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
-  .shoot(3, [Xe, Ye, Ze]).
+  .shoot(4, [Xe, Ye, Ze]).
 
 //COORDINACIoN: Responder a ordenes del lider si no tiene la bandera
 +tactical_support(LeaderPos)[source(Leader)]: not returning
@@ -101,4 +101,5 @@
   .goto(LeaderPos);
   .reload;
   ?flag(F);
-  .goto(F).
+  .goto(F);
+  -tactical_support.

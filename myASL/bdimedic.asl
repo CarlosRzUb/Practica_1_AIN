@@ -83,11 +83,14 @@
   .goto(B);
   +returning.
 
+//Al ver a un enemigo, piden cobertura a soldados y esperan 10 segundos antes de poder pedirlo de nuevo
 +backup_medics(C)
   <-
   ?position(MyPos);
   .send(C, tell, cover_request(MyPos));
-  .print("Solicitando cobertura a un soldado").
+  .print("Solicitando cobertura a un soldado");
+  .wait(10000);
+  -backup_medics.
 
 //Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo (equipo aliado)
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(100) & not returning
@@ -101,10 +104,10 @@
   else{
     .print("Disparando al enemigo");
     .look_at([Xe, Ye, Ze]);
-    .shoot(3, [Xe, Ye, Ze])
+    .shoot(4, [Xe, Ye, Ze])
   }.
 
-//Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo (equipo eje)
+//Si encuentran enemigos, evitan fuego amigo (equipo eje)
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(200)
   <-
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
@@ -115,7 +118,7 @@
   else{
     .print("Disparando al enemigo");
     .look_at([Xe, Ye, Ze]);
-    .shoot(3, [Xe, Ye, Ze])
+    .shoot(4, [Xe, Ye, Ze])
   }.
 
 
@@ -124,13 +127,13 @@
   .get_service("backup_medics");
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
-  .shoot(3, [Xe, Ye, Ze]).
+  .shoot(4, [Xe, Ye, Ze]).
 
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & team(200)
   <-
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
-  .shoot(3, [Xe, Ye, Ze]).
+  .shoot(4, [Xe, Ye, Ze]).
 
 //COORDINACIoN: Responder a ordenes del lider si no tiene la bandera
 +support_position(LeaderPos)[source(Leader)]: not returning
@@ -139,4 +142,5 @@
   .goto(LeaderPos);
   .cure;
   ?flag(F);
-  .goto(F).
+  .goto(F);
+  -support_position.
