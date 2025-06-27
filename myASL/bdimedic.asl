@@ -76,6 +76,13 @@
   +exploring;
   .turn(0.375).
 
++returning
+  <-
+  .print("Volviendo a la base");
+  ?base(B);
+  .goto(B);
+  +returning.
+
 +backup_medics(C)
   <-
   ?position(MyPos);
@@ -83,7 +90,7 @@
   .print("Solicitando cobertura a un soldado").
 
 //Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo (equipo aliado)
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(100)
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(100) & not returning
   <-
   .get_service("backup_medics");
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
@@ -112,7 +119,7 @@
   }.
 
 
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & team(100)
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & team(100) & not returning
   <-
   .get_service("backup_medics");
   .print("Campo libre, disparando al enemigo");
@@ -126,7 +133,7 @@
   .shoot(3, [Xe, Ye, Ze]).
 
 //COORDINACIoN: Responder a ordenes del lider si no tiene la bandera
-+support_position(LeaderPos)[source(Leader)]: not flag_taken
++support_position(LeaderPos)[source(Leader)]: not returning
   <-
   .print("Recibida orden de apoyo tactico del lider");
   .goto(LeaderPos);

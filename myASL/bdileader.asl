@@ -13,7 +13,7 @@
 
 
 //Coordinacion del lider
-+follow_leader(C): team(100) & not flag_taken & not enemies_in_fov(_,_,_,_,_,_)
++follow_leader(C): team(100) & not returning & not enemies_in_fov(_,_,_,_,_,_)
   <-
   .get_backups;
   .get_medics;
@@ -68,7 +68,7 @@
   .turn(0.375).
 
 //COMPORTAMIENTO MEJORADO: Evitar fuego amigo con flanqueo
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & not returning
   <-
   .safe_distance_check([Xs, Ys, Zs], [Xa, Ya, Za], 10, SafeDistance);
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE & SafeDistance == false){
@@ -92,11 +92,18 @@
     }
   }.
 
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs])
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & not returning
   <-
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
   .shoot(3, [Xe, Ye, Ze]).
+
++returning
+  <-
+  .print("Volviendo a la base");
+  ?base(B);
+  .goto(B);
+  +returning.
 
 +threshold_health(30)
   <-

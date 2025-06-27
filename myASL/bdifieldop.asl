@@ -14,7 +14,7 @@
   .goto(F).
 
 //SERVICIO: Suministro de municion critica (NUEVO)
-+critical_ammo_request(P, AmmoLevel)[source(A)]
++critical_ammo_request(P, AmmoLevel)[source(A)]: not returning
   <-
   .print("¡Peticion critica de municion de ", A, " con municion ", AmmoLevel, "!");
   if(AmmoLevel < 10){
@@ -27,6 +27,13 @@
     .goto(P);
     .reload
   }.
+
++returning
+  <-
+  .print("Volviendo a la base");
+  ?base(B);
+  .goto(B);
+  +returning.
 
 +target_reached(T): patrolling & team(200) 
   <-
@@ -68,7 +75,7 @@
   .turn(0.375).
 
 //COMPORTAMIENTO MEJORADO: Evitar fuego amigo
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs])
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & not returning
   <-
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
     .print("Aliado en linea de fuego, rodeando enemigo");
@@ -81,14 +88,14 @@
     .shoot(3, [Xe, Ye, Ze])
   }.
 
-+enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs])
++enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & not returning
   <-
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
   .shoot(3, [Xe, Ye, Ze]).
 
 //COORDINACIoN: Responder a ordenes del lider si no tiene la bandera
-+tactical_support(LeaderPos)[source(Leader)]: not flag_taken
++tactical_support(LeaderPos)[source(Leader)]: not returning
   <-
   .print("Recibida orden de apoyo tactico del lider");
   .goto(LeaderPos);
