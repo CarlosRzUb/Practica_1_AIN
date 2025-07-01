@@ -13,27 +13,9 @@
   <-
   .goto(F).
 
-//SERVICIO: Suministro de municion critica (NUEVO)
-+critical_ammo_request(P, AmmoLevel)[source(A)]: not returning
++heading(H): returning
   <-
-  .print("¡Peticion critica de municion de ", A, " con municion ", AmmoLevel, "!");
-  if(AmmoLevel < 10){
-    ?position(MyPos);
-    .send(A, tell, priority_ammo_coming(MyPos));
-    .goto(P);
-    +priority_resupply(A)
-  }
-  else{
-    .goto(P);
-    .reload
-  }.
-
-+returning
-  <-
-  .print("Volviendo a la base");
-  ?base(B);
-  .goto(B);
-  +returning.
+  .print("Volviendo a la base").
 
 +target_reached(T): patrolling & team(200) 
   <-
@@ -54,7 +36,7 @@
   -patroll_point(P);
   +patroll_point(0).
 
-+flag_taken: team(100) 
++flag_taken: team(100)
   <-
   .print("In ASL, TEAM_ALLIED flag_taken");
   ?base(B);
@@ -68,18 +50,31 @@
   .wait(2000);
   .turn(0.375).
 
-+target_reached(T): team(100)
++target_reached(T): team(100) & not returning
   <- 
   .print("target_reached");
   +exploring;
   .turn(0.375).
+
++target_reached(T): returning & team(100)
+  <-
+  ?base(B);
+  .print("Quiero volver a la base");
+  .goto(B);
+  -target_reached(T).
+
++enemies_in_fov(_,_,_,_,_,_): returning
+  <-
+  ?base(B);
+  .print("Volviendo a la base");
+  .goto(B).
 
 //COMPORTAMIENTO MEJORADO: Evitar fuego amigo
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & not returning
   <-
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
     .print("Aliado en linea de fuego, rodeando enemigo");
-    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+    .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
     .goto(CirclePoint)
   }
   else{
@@ -100,6 +95,7 @@
   .print("Recibida orden de apoyo tactico del lider");
   .goto(LeaderPos);
   .reload;
+  .wait(4000);
   ?flag(F);
   .goto(F);
-  -tactical_support.
+  -tactical_support(LeaderPos).

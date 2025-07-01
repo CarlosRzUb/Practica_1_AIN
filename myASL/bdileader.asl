@@ -20,6 +20,7 @@
   .get_fieldops;
   .wait(20000);
   ?position(MyPos);
+  ?flag(F);
   .send(C, tell, follow_leader(MyPos));
   if(myMedics(M) & M \== []){
     .send(M, tell, support_position(MyPos))
@@ -27,9 +28,8 @@
   if(myFieldops(Fo) & Fo \== []){
     .send(Fo, tell, tactical_support(MyPos))
   };
-  ?flag(F);
   .goto(MyPos);
-  .wait(2000);
+  .wait(4000);
   .goto(F);
   +follow_leader(C).
 
@@ -59,13 +59,26 @@
 
 +heading(H): returning
   <-
-  .print("returning").
+  .print("Volviendo a la base").
 
-+target_reached(T): team(100)
++target_reached(T): team(100) & not returning
   <-
   .print("target_reached");
   +exploring;
   .turn(0.375).
+
++target_reached(T): returning & team(100)
+  <-
+  ?base(B);
+  .print("Quiero volver a la base");
+  .goto(B);
+  -target_reached(T).
+
++enemies_in_fov(_,_,_,_,_,_): returning
+  <-
+  ?base(B);
+  .print("Volviendo a la base");
+  .goto(B).
 
 //COMPORTAMIENTO MEJORADO: Evitar fuego amigo con flanqueo
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & not returning
@@ -97,13 +110,6 @@
   .print("Campo libre, disparando al enemigo");
   .look_at([Xe, Ye, Ze]);
   .shoot(3, [Xe, Ye, Ze]).
-
-+returning
-  <-
-  .print("Volviendo a la base");
-  ?base(B);
-  .goto(B);
-  +returning.
 
 +threshold_health(30)
   <-

@@ -13,20 +13,14 @@
   <-
   .goto(F).
 
-//SERVICIO: Curacion de emergencia (NUEVO)
-+emergency_heal_request(P, HealthLevel)[source(A)]
++flag_taken: team(100) 
   <-
-  .print("¡Peticion de curacion de emergencia de ", A, " con salud ", HealthLevel, "!");
-  if(HealthLevel < 20){
-    ?position(MyPos);
-    .send(A, tell, priority_medic_coming(MyPos));
-    .goto(P);
-    +emergency_healing(A)
-  }
-  else{
-    .goto(P);
-    .cure
-  }.
+  -exploring;
+  .print("In ASL, TEAM_ALLIED flag_taken");
+  ?base(B);
+  .goto(B);
+  +returning.
+
 
 //Cuando recibe una peticion de curacion normal
 +heal_me(P)[source(A)]
@@ -45,6 +39,13 @@
   -+patroll_point(P+1);
   -target_reached(T).
 
++target_reached(T): returning & team(100)
+  <-
+  ?base(B);
+  .print("Quiero volver a la base");
+  .goto(B);
+  -target_reached(T).
+
 +patroll_point(P): total_control_points(T) & P<T 
   <-
   ?control_points(C);
@@ -56,41 +57,30 @@
   -patroll_point(P);
   +patroll_point(0).
 
-+flag_taken: team(100) 
-  <-
-  .print("In ASL, TEAM_ALLIED flag_taken");
-  ?base(B);
-  +returning;
-  .goto(B);
-  -exploring.
-
 +heading(H): exploring
   <-
   .cure;
   .wait(2000);
   .turn(0.375).
 
-+target_reached(T): team(100)
++target_reached(T): team(100) & not returning
   <- 
   .print("target_reached");
   +exploring;
   .turn(0.375).
 
-+returning
++heading(H): returning
   <-
-  .print("Volviendo a la base");
-  ?base(B);
-  .goto(B);
-  +returning.
+  .print("Volviendo a la base").
 
 //Al ver a un enemigo, piden cobertura a soldados y esperan 10 segundos antes de poder pedirlo de nuevo
-+backup_medics(C)
++backup_medics(C): not returning
   <-
   ?position(MyPos);
   .send(C, tell, cover_request(MyPos));
   .print("Solicitando cobertura a un soldado");
   .wait(10000);
-  -backup_medics.
+  -backup_medics(C).
 
 //Si encuentran enemigos, piden cobertura a un soldado y evitan fuego amigo (equipo aliado)
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & team(100) & not returning
@@ -98,7 +88,7 @@
   .get_service("backup_medics");
   if(AngA == AngE & AngA > 0 & DistanceA < DistanceE){
     .print("Aliado en linea de fuego, rodeando enemigo");
-    CirclePoint = .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE);
+    .circle([Xs, Ys, Zs], [Xe, Ye, Ze], DistanceE, CirclePoint);
     .goto(CirclePoint)
   }
   else{
@@ -121,6 +111,12 @@
     .shoot(4, [Xe, Ye, Ze])
   }.
 
++enemies_in_fov(_,_,_,_,_,_): returning
+  <-
+  ?base(B);
+  .print("Volviendo a la base");
+  .goto(B).
+
 
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): not friends_in_fov(_,_,_,_,_,_) & position([Xs, Ys, Zs]) & team(100) & not returning
   <-
@@ -141,6 +137,7 @@
   .print("Recibida orden de apoyo tactico del lider");
   .goto(LeaderPos);
   .cure;
+  .wait(4000);
   ?flag(F);
   .goto(F);
-  -support_position.
+  -support_position(LeaderPos).

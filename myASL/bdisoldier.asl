@@ -15,10 +15,10 @@
   <-
   .print("Recibida orden de formacion del lider");
   .goto(LeaderPos);
-  .wait(3000);
+  .wait(4000);
   ?flag(F);
   .goto(F);
-  -follow_leader.
+  -follow_leader(LeaderPos).
 
 //TEAM_AXIS - Coordinacion defensiva
 +flag (F): team(200)
@@ -35,6 +35,13 @@
   <-
   ?patroll_point(P);
   -+patroll_point(P+1);
+  -target_reached(T).
+
++target_reached(T): returning & team(100)
+  <-
+  ?base(B);
+  .print("Quiero volver a la base");
+  .goto(B);
   -target_reached(T).
 
 +patroll_point(P): total_control_points(T) & P<T
@@ -56,27 +63,26 @@
   .goto(B);
   -exploring.
 
-+returning
++heading(H): returning
   <-
-  .print("Volviendo a la base");
-  ?base(B);
-  .goto(B);
-  +returning.
+  .print("Volviendo a la base").
 
 +heading(H): exploring
   <-
   .wait(2000);
   .turn(0.375).
 
-+heading(H): returning
-  <-
-  .print("returning").
-
-+target_reached(T): team(100)
++target_reached(T): team(100) & not returning
   <-
   .print("target_reached");
   +exploring;
   .turn(0.375).
+
++enemies_in_fov(_,_,_,_,_,_): returning
+  <-
+  ?base(B);
+  .print("Volviendo a la base");
+  .goto(B).
 
 //COMPORTAMIENTO MEJORADO: Evitar fuego amigo con flanqueo
 +enemies_in_fov(IDE,TypeE,AngE,DistanceE,HealthE,[Xe, Ye, Ze]): friends_in_fov(IDA,TypeA,AngA,DistanceA,HealthA,[Xa, Ya, Za]) & position([Xs, Ys, Zs]) & not returning
@@ -123,6 +129,7 @@
   <-
   .print("Mision de cobertura en area ", Area, " solicitada por ", A);
   .goto(Area);
+  .wait(4000);
   ?flag(F);
   .goto(F);
-  -cover_request.
+  -cover_request(Area).
